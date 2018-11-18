@@ -20,6 +20,7 @@ class Store:
         for s in self.shows:
             if username in s.users:
                 user_shows.append(s)
+        return user_shows
 
 
 def validate_login(username, password):
