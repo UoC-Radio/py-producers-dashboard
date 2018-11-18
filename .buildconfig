@@ -1,0 +1,14 @@
+[default]
+name=Default
+runtime=flatpak:org.gnome.Platform/x86_64/3.28
+config-opts=
+run-opts=
+prefix=/app
+app-id=
+postbuild=
+prebuild=
+default=true
+
+[default.environment]
+PKG_CONFIG_PATH="/opt/gnome/lib/pkgconfig:$PKG_CONFIG_PATH"
+GI_TYPELIB_PATH="/opt/gnome/lib/girepository-1.0:$GI_TYPELIB_PATH"

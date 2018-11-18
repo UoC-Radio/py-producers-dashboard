@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/gr/uoc/radio/dashboard">
+    <file preprocess="xml-stripblanks">AboutDialog.ui</file>
+    <file alias="gtk/menus.ui" preprocess="xml-stripblanks">app-menu.ui</file>
+    <file alias="gtk/help-overlay.ui" preprocess="xml-stripblanks">help-overlay.ui</file>
+    <file>application.css</file>
+    <file compressed="true">images/logo_256.png</file>
+    <file preprocess="xml-stripblanks">HeaderBar.ui</file>
+
+    <file preprocess="xml-stripblanks">MainWindow.ui</file>
+    <!-- Pages -->
+    <file preprocess="xml-stripblanks">LoginPage.ui</file>
+    <file preprocess="xml-stripblanks">GolivePage.ui</file>
+    <file preprocess="xml-stripblanks">WaitPage.ui</file>
+    <file preprocess="xml-stripblanks">LivePage.ui</file>
+    <file preprocess="xml-stripblanks">ShowsPage.ui</file>
+
+
+  </gresource>
+</gresources>
