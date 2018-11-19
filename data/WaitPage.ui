@@ -2,15 +2,22 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <!-- interface-local-resource-path ./data/images -->
+  <!-- interface-css-provider-path application.css -->
   <template class="WaitPage" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
+    <property name="spacing">10</property>
+    <signal name="map" handler="on_WaitPage_map" swapped="no"/>
     <child>
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Show</property>
+        <style>
+          <class name="title_h1"/>
+        </style>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -35,6 +42,9 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Message</property>
+        <style>
+          <class name="title_h1"/>
+        </style>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -46,6 +56,10 @@
       <object class="GtkTextView" id="message_textview">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+        <property name="margin_left">20</property>
+        <property name="margin_right">20</property>
+        <property name="editable">False</property>
+        <property name="wrap_mode">word</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -58,12 +72,16 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="halign">center</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">5</property>
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Will go live in: </property>
+            <style>
+              <class name="title_h1"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -72,28 +90,43 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="remaining_label">
-            <property name="name">remaining_label</property>
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">XXX</property>
+            <property name="halign">center</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkLabel" id="remaining_label">
+                <property name="name">remaining_label</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">XXX</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">sec.</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">sec.</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
           </packing>
         </child>
       </object>
@@ -116,6 +149,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="halign">center</property>
+            <signal name="clicked" handler="on_instant_button_clicked" swapped="no"/>
             <style>
               <class name="action_button"/>
             </style>
@@ -133,6 +167,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="halign">center</property>
+            <signal name="clicked" handler="on_cancel_button_clicked" swapped="no"/>
             <style>
               <class name="action_button"/>
             </style>

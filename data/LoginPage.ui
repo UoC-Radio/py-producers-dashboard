@@ -9,6 +9,7 @@
     <property name="valign">center</property>
     <property name="orientation">vertical</property>
     <property name="spacing">5</property>
+    <signal name="key-release-event" handler="on_LoginPage_key_release_event" swapped="no"/>
     <child>
       <object class="GtkImage" id="login_page_logo">
         <property name="name">login_page_logo</property>
