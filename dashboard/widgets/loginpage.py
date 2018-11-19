@@ -1,5 +1,5 @@
 from gettext import gettext as _, ngettext
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gtk, Gdk
 
 from dashboard import log
 
@@ -34,3 +34,9 @@ class LoginPage(Gtk.Box):
         password = self._password_entry.get_text()
 
         self.emit('login-attempted', username, password)
+
+    @Gtk.Template.Callback()
+    @log
+    def on_LoginPage_key_release_event(self, widget, event):
+        if event.keyval == Gdk.KEY_Return:
+            self.on_login_button_clicked(widget)
