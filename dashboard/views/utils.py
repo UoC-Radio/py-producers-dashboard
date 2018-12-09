@@ -35,6 +35,7 @@ def get_text_fom_textview(tv):
     buf = tv.get_buffer()
     return buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
 
+
 def get_row_idx_from_treeview(tv):
     selection = tv.get_selection()
     model, treeiter = selection.get_selected()
@@ -42,3 +43,8 @@ def get_row_idx_from_treeview(tv):
         return int(model.get_path(treeiter).to_string())
     else:
         return -1
+
+
+def get_row_idx_from_listbox(lb):
+    selection = lb.get_selected_row()
+    return selection.get_index()

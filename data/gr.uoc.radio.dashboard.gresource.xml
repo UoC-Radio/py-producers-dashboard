@@ -15,6 +15,10 @@
     <file preprocess="xml-stripblanks">WaitPage.ui</file>
     <file preprocess="xml-stripblanks">LivePage.ui</file>
     <file preprocess="xml-stripblanks">ShowsPage.ui</file>
+    <!-- Widgets -->
+    <file preprocess="xml-stripblanks">Message.ui</file>
+    <file preprocess="xml-stripblanks">Show.ui</file>
+
 
 
   </gresource>

@@ -2,7 +2,9 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <!-- interface-css-provider-path application.css -->
   <template class="Message" parent="GtkBox">
+    <property name="name">single_message_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
@@ -11,10 +13,12 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkLabel" id="sender_label">
+            <property name="name">sender_label</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
             <property name="label" translatable="yes">&lt;sender_name&gt;</property>
+            <property name="selectable">True</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -23,27 +27,17 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkLabel" id="timestamp_label">
+            <property name="name">timestamp_label</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
             <property name="label" translatable="yes">&lt;timestamp&gt;</property>
+            <property name="selectable">True</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">&lt;ip&gt;</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
           </packing>
         </child>
       </object>
@@ -54,12 +48,11 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel">
+      <object class="GtkTextView" id="inbox_message_textview">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="halign">start</property>
-        <property name="label" translatable="yes">&lt;message_content&gt;</property>
-        <property name="selectable">True</property>
+        <property name="can_focus">True</property>
+        <property name="editable">False</property>
+        <property name="wrap_mode">word</property>
       </object>
       <packing>
         <property name="expand">False</property>

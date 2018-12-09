@@ -1,4 +1,5 @@
 import lorem
+import sqlite3
 from dashboard.models import Show
 
 import requests
@@ -53,7 +54,19 @@ def get_metadata():
     return data, (duration - elapsed)
 
 
+# TODO: make it async
 def query_autopilot_remaining():
     data, next = get_metadata()
     print(data)
     return next
+
+
+def fetch_sample_messages(page_length, page_number):
+    conn = sqlite3.connect('../data/sample_db/radioShows.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM messages WHERE recepient is null')
+    all = c.fetchall()
+
+    len_all = len(all)
+    data_slice = slice(len_all - page_length * page_number, len_all - page_length * (page_number - 1))
+    return all[data_slice]

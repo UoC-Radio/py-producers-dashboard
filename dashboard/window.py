@@ -45,7 +45,10 @@ class Window(Gtk.ApplicationWindow):
         self.current_show = None
         self.timer_id = None
         self.time_for_live = None
-        self.current_message = None
+
+        # Keep a single TextBuffer for all pages
+        self.message_buffer = Gtk.TextBuffer()
+        self.messages_model = None
         # </State>
 
         self.prev_view = None
@@ -103,14 +106,23 @@ class Window(Gtk.ApplicationWindow):
                 'live_page': LivePage(),
             }
 
+        # Initiate buffers
+        self._pages['golive_page'].set_buffer(self.message_buffer)
+        self._pages['wait_page'].set_buffer(self.message_buffer)
+        self._pages['live_page'].set_buffer(self.message_buffer)
+
+
         # Connect signals
         self._pages['login_page'].connect('login-attempted', self._on_login_attempted)
-        self._pages['golive_page'].connect('live-page-shown', self._on_live_page_shown)
+        self._pages['golive_page'].connect('golive-page-shown', self._on_golive_page_shown)
         self._pages['golive_page'].connect('golive-attempted', self._on_golive_attempted)
 
         self._pages['wait_page'].connect('wait-page-shown', self._on_wait_page_shown)
         self._pages['wait_page'].connect('instant-attempted', self._on_instant_attempted)
         self._pages['wait_page'].connect('cancel-attempted', self._on_cancel_attempted)
+
+        self._pages['live_page'].connect('live-page-shown', self._on_live_page_shown)
+
 
         # Setup title bar
         self._headerbar = HeaderBar()
@@ -158,10 +170,10 @@ class Window(Gtk.ApplicationWindow):
             self._views_stack.set_visible_child(self._pages['golive_page'])
 
     @log
-    def _on_live_page_shown(self, widget):
+    def _on_golive_page_shown(self, widget):
         self.user_shows = self.store.get_user_shows(self.current_user)
-        tv = utils.get_descendant(widget, 'existing_shows_view', 0)
-        views.setup_shows_treeview(tv, self.user_shows)
+        lb = utils.get_descendant(widget, 'existing_shows_view', 0)
+        views.setup_shows_listbox(lb, self.user_shows)
 
     @log
     def _on_golive_attempted(self, widget):
@@ -177,7 +189,6 @@ class Window(Gtk.ApplicationWindow):
     @log
     def _on_wait_page_shown(self, widget, show_title_label, message_textview, remaining_label):
         show_title_label.set_text(self.current_show.title)
-        message_textview.get_buffer().set_text(self.current_message)
 
         # initiate timer
         self.time_for_live = query_autopilot_remaining()
@@ -193,6 +204,12 @@ class Window(Gtk.ApplicationWindow):
     def _on_cancel_attempted(self, widget):
         self._invalidate_timer()
         self._views_stack.set_visible_child(self._pages['golive_page'])
+
+    @log
+    def _on_live_page_shown(self, widget):
+        messages = fetch_sample_messages(20, 1)
+        lb = utils.get_descendant(widget, 'inbox_messages_view', 0)
+        views.setup_inbox_listbox(lb, messages)
 
     # Helper functions
 
@@ -217,11 +234,9 @@ class Window(Gtk.ApplicationWindow):
         show_option = shows_stack.get_visible_child()
         show_option_name = shows_stack.get_visible_child_name()
 
-        self.current_message = utils.get_text_fom_textview(utils.get_descendant(self, 'message_view', 0))
-
         if show_option_name == 'Existing':
             existing_shows = utils.get_descendant(shows_stack, 'existing_shows_view', 0)
-            self.current_show = self.user_shows[utils.get_row_idx_from_treeview(existing_shows)]
+            self.current_show = self.user_shows[utils.get_row_idx_from_listbox(existing_shows)]
         elif show_option_name == 'Special':
             special_title = utils.get_descendant(shows_stack, 'special_title', 0).get_text()
             special_nickname = utils.get_descendant(shows_stack, 'special_nickname', 0).get_text()

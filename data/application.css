@@ -2,10 +2,116 @@
     unbind "<ctrl>space";
 }
 
+/* Explicit top-level declarations. TODO: Let user specify font size */
+window
+{
+	font-size: 14px;
+}
+
+textview
+{
+    padding: 0.5em;
+}
+
+frame
+{
+    padding: 0.5em;
+}
+
+.action_button
+{
+    margin: 1em;
+}
+
 .title_h1
 {
-	font-size:20px;
+	font-size:1.2em;
 	font-weight:bold;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-top: 0.8em;
+	padding-bottom: 0.8em;
 }
+
+.form_label
+{
+    margin-bottom: 0.2em;
+    /*text alignment is not supported by GTK/CSS*/
+}
+
+.form_entry
+{
+	margin-bottom: 0.8em;
+}
+
+.non_editable_entry, .non_editable_entry text
+{
+    background-color: inherit;
+}
+
+
+#wait_box, #golive_box
+{
+    padding: 2em;
+}
+
+#showtitle_label
+{
+    font-size: 2em;
+}
+
+#message_textview
+{
+    font-size: 2em;
+}
+
+#message_textview text
+{
+    padding: 0.15em;
+}
+
+#icon_image
+{
+    /*font-size: 3em;*/
+    margin: 2em;
+}
+
+/* Shows */
+#show_infobox
+{
+    margin: 1em;
+
+}
+
+#title_label
+{
+    font-size: 1.5em;
+}
+
+/* Messages */
+#sender_label
+{
+    font-weight: bold;
+    margin-left: 0.5em;
+}
+
+#timestamp_label
+{
+    margin-left: 1em;
+    font-style: italic;
+}
+
+#single_message_box
+{
+    border-bottom: 0.1em black dotted;
+}
+
+#pagination_box
+{
+    margin: 1em;
+}
+
+#pagination_info, #pagination_controls
+{
+    margin-bottom: 1em;
+}
+
+

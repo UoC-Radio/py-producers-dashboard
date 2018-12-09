@@ -5,6 +5,7 @@
   <!-- interface-local-resource-path ./data/images -->
   <!-- interface-css-provider-path application.css -->
   <template class="WaitPage" parent="GtkBox">
+    <property name="name">wait_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
@@ -14,7 +15,8 @@
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Show</property>
+        <property name="label" translatable="yes">Get ready for the show...</property>
+        <property name="xalign">0</property>
         <style>
           <class name="title_h1"/>
         </style>
@@ -27,6 +29,7 @@
     </child>
     <child>
       <object class="GtkLabel" id="showtitle_label">
+        <property name="name">showtitle_label</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Show title</property>
@@ -38,12 +41,19 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel">
+      <object class="GtkTextView" id="message_textview">
+        <property name="name">message_textview</property>
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Message</property>
+        <property name="can_focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="editable">False</property>
+        <property name="wrap_mode">word</property>
+        <property name="justification">center</property>
+        <property name="cursor_visible">False</property>
+        <property name="accepts_tab">False</property>
         <style>
-          <class name="title_h1"/>
+          <class name="non_editable_entry"/>
         </style>
       </object>
       <packing>
@@ -53,35 +63,17 @@
       </packing>
     </child>
     <child>
-      <object class="GtkTextView" id="message_textview">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="margin_left">20</property>
-        <property name="margin_right">20</property>
-        <property name="editable">False</property>
-        <property name="wrap_mode">word</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="halign">center</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">5</property>
+        <property name="spacing">10</property>
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Will go live in: </property>
-            <style>
-              <class name="title_h1"/>
-            </style>
+            <property name="label" translatable="yes">Current song from autopilot will finish in</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -90,43 +82,30 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkLabel" id="remaining_label">
+            <property name="name">remaining_label</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="halign">center</property>
-            <property name="spacing">10</property>
-            <child>
-              <object class="GtkLabel" id="remaining_label">
-                <property name="name">remaining_label</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">XXX</property>
-                <property name="justify">center</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">sec.</property>
-                <property name="justify">center</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
+            <property name="label" translatable="yes">XXX</property>
+            <property name="justify">center</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">sec.</property>
+            <property name="justify">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

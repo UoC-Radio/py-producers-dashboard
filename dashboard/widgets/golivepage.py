@@ -12,7 +12,7 @@ class GolivePage(Gtk.Box):
 
     __gsignals__ = \
         {
-            'live-page-shown': (GObject.SignalFlags.RUN_FIRST, None, ()),
+            'golive-page-shown': (GObject.SignalFlags.RUN_FIRST, None, ()),
             'golive-attempted': (GObject.SignalFlags.RUN_FIRST, None, ()),
         }
 
@@ -22,13 +22,17 @@ class GolivePage(Gtk.Box):
     @log
     def __init__(self):
         super().__init__()
+        self._message = utils.get_descendant(self, 'message_textview', 0)
 
     @Gtk.Template.Callback()
     @log
     def on_GolivePage_map(self, widget):
-        self.emit('live-page-shown')
+        self.emit('golive-page-shown')
 
     @Gtk.Template.Callback()
     @log
     def on_golive_button_clicked(self, widget):
         self.emit('golive-attempted')
+
+    def set_buffer(self, text_buffer: Gtk.TextBuffer):
+        self._message.set_buffer(text_buffer)

@@ -2,11 +2,12 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <!-- interface-css-provider-path application.css -->
   <template class="GolivePage" parent="GtkBox">
+    <property name="name">golive_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
-    <property name="homogeneous">True</property>
     <signal name="map" handler="on_GolivePage_map" swapped="no"/>
     <child>
       <object class="GtkFrame" id="show_frame">
@@ -20,8 +21,6 @@
           <object class="GtkAlignment">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="left_padding">12</property>
-            <property name="right_padding">12</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -31,7 +30,7 @@
                   <object class="GtkStackSwitcher" id="show_switcher">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">center</property>
+                    <property name="halign">start</property>
                     <property name="icon_size">0</property>
                     <property name="stack">shows_stack</property>
                   </object>
@@ -46,11 +45,21 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkTreeView" id="existing_shows_view">
+                      <object class="GtkScrolledWindow">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                        <property name="shadow_type">in</property>
+                        <child>
+                          <object class="GtkViewport">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkListBox" id="existing_shows_view">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                            </child>
+                          </object>
                         </child>
                       </object>
                       <packing>
@@ -67,8 +76,11 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Pick a title for your show</property>
+                            <property name="label" translatable="yes">Title of the show</property>
                             <property name="xalign">0</property>
+                            <style>
+                              <class name="form_label"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -80,6 +92,9 @@
                           <object class="GtkEntry" id="special_title">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <style>
+                              <class name="form_entry"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -91,8 +106,11 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Specify producer(s) nickname(s)</property>
+                            <property name="label" translatable="yes">Producer(s) nickname(s)</property>
                             <property name="xalign">0</property>
+                            <style>
+                              <class name="form_label"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -104,8 +122,9 @@
                           <object class="GtkEntry" id="special_nickname">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="max_length">20</property>
-                            <property name="width_chars">20</property>
+                            <style>
+                              <class name="form_entry"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -122,7 +141,7 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">2</property>
                   </packing>
@@ -168,8 +187,6 @@
                 <property name="height_request">100</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="left_padding">12</property>
-                <property name="right_padding">12</property>
                 <child>
                   <object class="GtkScrolledWindow">
                     <property name="visible">True</property>
@@ -178,11 +195,10 @@
                     <property name="shadow_type">in</property>
                     <property name="propagate_natural_width">True</property>
                     <child>
-                      <object class="GtkTextView" id="message_view">
+                      <object class="GtkTextView" id="message_textview">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="wrap_mode">word</property>
-                        <property name="indent">10</property>
                       </object>
                     </child>
                   </object>
@@ -193,7 +209,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Message for your audience</property>
+                <property name="label" translatable="yes">Message for the audience</property>
                 <style>
                   <class name="title_h1"/>
                 </style>

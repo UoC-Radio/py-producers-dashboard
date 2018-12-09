@@ -145,7 +145,7 @@ class InboxMessageCellRenderer(Gtk.CellRenderer):
         self._message = value
 
     def do_get_size(self, widget, cell_area):
-        return (0, 0, 200, 80)
+        return 0, 0, 200, 80
 
     def do_render(self, ctx, widget, background_area, cell_area, flags):
         ctx.translate(0, 0)
@@ -189,6 +189,8 @@ class InboxMessageCellRenderer(Gtk.CellRenderer):
 
         message_area.x = fill_area.x
         message_area.y = fill_area.y + sender_area.height
+
+        self._message_renderer.set_fixed_height_from_font(2)
 
         # render the cell
         self._sender_renderer.render(ctx, widget, background_area, sender_area, flags)

@@ -41,3 +41,6 @@ class WaitPage(Gtk.Box):
     @log
     def on_cancel_button_clicked(self, widget):
         self.emit('cancel-attempted')
+
+    def set_buffer(self, text_buffer: Gtk.TextBuffer):
+        self._message.set_buffer(text_buffer)
