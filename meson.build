@@ -58,8 +58,8 @@ bin_config.set('schemasdir', '')
 bin_config.set('local_build', 'False')
 
 configure_file(
-    input: 'producers-dasboard.in',
-    output: 'producers-dasboard',
+    input: 'producers-dashboard.in',
+    output: 'producers-dashboard',
     configuration: bin_config,
     install_dir: get_option('bindir')
 )
@@ -77,8 +77,8 @@ local_config.set('schemasdir', join_paths(meson.build_root(), 'data'))
 local_config.set('local_build', 'True')
 
 configure_file(
-    input: 'producers-dasboard.in',
-    output: 'local-producers-dasboard',
+    input: 'producers-dashboard.in',
+    output: 'local-producers-dashboard',
     configuration: local_config
 )
 
