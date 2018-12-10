@@ -14,6 +14,8 @@ from dashboard.widgets.waitpage import WaitPage
 from dashboard.widgets.livepage import LivePage
 from dashboard.widgets.showspage import ShowsPage
 
+from dashboard.models import AsyncResult
+
 from dashboard.remote import *
 from dashboard.views import views, utils
 from dashboard.utilities import PaginationState
@@ -152,6 +154,7 @@ class Window(Gtk.ApplicationWindow):
 
         # 2. Views Stack
         self._views_stack = Gtk.Stack()
+        self._views_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
 
         for k, p in self._pages.items():
             self._views_stack.add(p)
@@ -205,14 +208,14 @@ class Window(Gtk.ApplicationWindow):
         wait_page.set_wait()
         self.pool.apply_async(self.query_autopilot_remaining, [wait_page], callback=Window.init_timer)
 
-    def query_autopilot_remaining(self, widget):
-        return self, query_autopilot_remaining(), widget
+    def query_autopilot_remaining(self, wait_page):
+        return AsyncResult(self, wait_page, query_autopilot_remaining())
 
     @staticmethod
-    def init_timer(async_return):
-        async_return[0].time_for_live = async_return[1]
-        async_return[2].set_remaining(str(async_return[0].time_for_live))
-        async_return[0].timer_id = GLib.timeout_add(1000, async_return[0]._timer_callback, async_return[2])
+    def init_timer(result: AsyncResult):
+        result.self.time_for_live = result.actual_result
+        result.widget.set_remaining(str(result.self.time_for_live))
+        result.self.timer_id = GLib.timeout_add(1000, result.self._timer_callback, result.widget)
 
     @log
     def _on_instant_attempted(self, widget):

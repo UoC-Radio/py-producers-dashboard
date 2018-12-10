@@ -59,7 +59,6 @@ import time
 def query_autopilot_remaining():
     data, next = get_metadata()
     print(data)
-    time.sleep(3)
     return next
 
 

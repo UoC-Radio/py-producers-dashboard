@@ -6,6 +6,8 @@ from collections import namedtuple
 
 Show = namedtuple('Show', ['title', 'users', 'nickname', 'description', 'sites', 'logo_path'])
 
+AsyncResult = namedtuple('AsyncResult', ['self', 'widget', 'actual_result'])
+
 
 class ShowObject(GObject.Object):
     def __init__(self, title, subtitle, logo_path):
