@@ -12,7 +12,7 @@ class WaitPage(Gtk.Box):
 
     __gsignals__ = \
         {
-            'wait-page-shown': (GObject.SignalFlags.RUN_FIRST, None, (Gtk.Label, Gtk.TextView, Gtk.Label)),
+            'wait-page-shown': (GObject.SignalFlags.RUN_FIRST, None, ()),
             'instant-attempted': (GObject.SignalFlags.RUN_FIRST, None, ()),
             'cancel-attempted': (GObject.SignalFlags.RUN_FIRST, None, ()),
         }
@@ -26,11 +26,12 @@ class WaitPage(Gtk.Box):
         self._show_title = utils.get_descendant(self, 'showtitle_label', 0)
         self._message = utils.get_descendant(self, 'message_textview', 0)
         self._remaining = utils.get_descendant(self, 'remaining_label', 0)
+        self._remaining_stack = utils.get_descendant(self, 'remaining_stack', 0)
 
     @Gtk.Template.Callback()
     @log
     def on_WaitPage_map(self, widget):
-        self.emit('wait-page-shown', self._show_title, self._message, self._remaining)
+        self.emit('wait-page-shown')
 
     @Gtk.Template.Callback()
     @log
@@ -44,3 +45,14 @@ class WaitPage(Gtk.Box):
 
     def set_buffer(self, text_buffer: Gtk.TextBuffer):
         self._message.set_buffer(text_buffer)
+
+    def set_title(self, txt):
+        self._show_title.set_text(txt)
+
+    def set_wait(self):
+        self._remaining_stack.set_visible_child_name('wait_spinner')
+
+    def set_remaining(self, txt):
+        self._remaining.set_text(txt)
+        self._remaining_stack.set_visible_child_name('remaining_label')
+

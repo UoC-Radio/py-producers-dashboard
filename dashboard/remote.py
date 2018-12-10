@@ -6,6 +6,7 @@ import requests
 import math
 import json
 
+
 class Store:
 
     sample_descr = lorem.paragraph()
@@ -53,11 +54,12 @@ def get_metadata():
 
     return data, (duration - elapsed)
 
-
+import time
 # TODO: make it async
 def query_autopilot_remaining():
     data, next = get_metadata()
     print(data)
+    time.sleep(3)
     return next
 
 
@@ -68,5 +70,5 @@ def fetch_sample_messages(page_length, page_number):
     all = c.fetchall()
 
     len_all = len(all)
-    data_slice = slice(len_all - page_length * page_number, len_all - page_length * (page_number - 1))
-    return all[data_slice]
+    data_slice = slice(max(0, len_all - page_length * page_number), len_all - page_length * (page_number - 1))
+    return all[data_slice][::-1], len_all

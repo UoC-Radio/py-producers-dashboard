@@ -82,12 +82,34 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="remaining_label">
-            <property name="name">remaining_label</property>
+          <object class="GtkStack" id="remaining_stack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">XXX</property>
-            <property name="justify">center</property>
+            <child>
+              <object class="GtkSpinner" id="wait_spinner">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="active">True</property>
+              </object>
+              <packing>
+                <property name="name">wait_spinner</property>
+                <property name="title" translatable="yes">wait_spinner</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="remaining_label">
+                <property name="name">remaining_label</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">XXX</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="name">remaining_label</property>
+                <property name="title" translatable="yes">remaining_label</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

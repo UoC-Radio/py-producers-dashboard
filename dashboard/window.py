@@ -1,6 +1,9 @@
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 from gettext import gettext as _
 
+import sys
+import math
+from multiprocessing.pool import ThreadPool
 from dashboard import log
 from dashboard.widgets.headerbar import HeaderBar
 
@@ -13,6 +16,7 @@ from dashboard.widgets.showspage import ShowsPage
 
 from dashboard.remote import *
 from dashboard.views import views, utils
+from dashboard.utilities import PaginationState
 
 from enum import IntEnum
 
@@ -46,9 +50,15 @@ class Window(Gtk.ApplicationWindow):
         self.timer_id = None
         self.time_for_live = None
 
+        self.pagination_state = None
+
         # Keep a single TextBuffer for all pages
         self.message_buffer = Gtk.TextBuffer()
-        self.messages_model = None
+
+        self.inbox_messages_model = Gio.ListStore()
+
+        self.pool = ThreadPool(processes=1)
+
         # </State>
 
         self.prev_view = None
@@ -122,7 +132,10 @@ class Window(Gtk.ApplicationWindow):
         self._pages['wait_page'].connect('cancel-attempted', self._on_cancel_attempted)
 
         self._pages['live_page'].connect('live-page-shown', self._on_live_page_shown)
-
+        self._pages['live_page'].connect('goto-first-clicked', self._on_goto_first_clicked)
+        self._pages['live_page'].connect('goto-previous-clicked', self._on_goto_previous_clicked)
+        self._pages['live_page'].connect('goto-next-clicked', self._on_goto_next_clicked)
+        self._pages['live_page'].connect('goto-last-clicked', self._on_goto_last_clicked)
 
         # Setup title bar
         self._headerbar = HeaderBar()
@@ -187,13 +200,19 @@ class Window(Gtk.ApplicationWindow):
             self._views_stack.set_visible_child(self._pages['wait_page'])
 
     @log
-    def _on_wait_page_shown(self, widget, show_title_label, message_textview, remaining_label):
-        show_title_label.set_text(self.current_show.title)
+    def _on_wait_page_shown(self, wait_page):
+        wait_page.set_title(self.current_show.title)
+        wait_page.set_wait()
+        self.pool.apply_async(self.query_autopilot_remaining, [wait_page], callback=Window.init_timer)
 
-        # initiate timer
-        self.time_for_live = query_autopilot_remaining()
-        remaining_label.set_text(str(self.time_for_live))
-        self.timer_id = GLib.timeout_add(1000, self._timer_callback, remaining_label)
+    def query_autopilot_remaining(self, widget):
+        return self, query_autopilot_remaining(), widget
+
+    @staticmethod
+    def init_timer(async_return):
+        async_return[0].time_for_live = async_return[1]
+        async_return[2].set_remaining(str(async_return[0].time_for_live))
+        async_return[0].timer_id = GLib.timeout_add(1000, async_return[0]._timer_callback, async_return[2])
 
     @log
     def _on_instant_attempted(self, widget):
@@ -207,16 +226,39 @@ class Window(Gtk.ApplicationWindow):
 
     @log
     def _on_live_page_shown(self, widget):
-        messages = fetch_sample_messages(20, 1)
+        messages_subset, total_messages = fetch_sample_messages(20, 1)
+        self.pagination_state = PaginationState(total_messages)
+
+        _, sensitivities, (first, last) = self.pagination_state.goto_first_page()
+        info = self._get_pagination_info(first, last, total_messages)
+        widget.update_pagination(info, sensitivities)
+
         lb = utils.get_descendant(widget, 'inbox_messages_view', 0)
-        views.setup_inbox_listbox(lb, messages)
+        views.setup_inbox_listbox(lb, self.inbox_messages_model, messages_subset)
+
+    @log
+    def _on_goto_first_clicked(self, widget):
+        self._handle_pagination_clicked(widget, self.pagination_state.goto_first_page)
+
+    @log
+    def _on_goto_previous_clicked(self, widget):
+        self._handle_pagination_clicked(widget, self.pagination_state.goto_previous_page)
+
+    @log
+    def _on_goto_next_clicked(self, widget):
+        self._handle_pagination_clicked(widget, self.pagination_state.goto_next_page)
+
+
+    @log
+    def _on_goto_last_clicked(self, widget):
+        self._handle_pagination_clicked(widget, self.pagination_state.goto_last_page)
 
     # Helper functions
 
     def switch_to_live(self):
         self._views_stack.set_visible_child(self._pages['live_page'])
 
-    def _timer_callback(self, label):
+    def _timer_callback(self, widget):
         self.time_for_live -= 1
 
         if self.time_for_live == 0:
@@ -224,11 +266,12 @@ class Window(Gtk.ApplicationWindow):
             self.switch_to_live()
             return False
         else:
-            label.set_text(str(self.time_for_live))
+            widget.set_remaining(str(self.time_for_live))
             return True
 
     def _invalidate_timer(self):
-        GLib.source_remove(self.timer_id)
+        if self.timer_id:
+            GLib.source_remove(self.timer_id)
 
     def _setup_current_show(self, shows_stack):
         show_option = shows_stack.get_visible_child()
@@ -244,3 +287,15 @@ class Window(Gtk.ApplicationWindow):
             self.current_show = Show(special_title, [self.current_user], special_nickname, '', [], '')
         else:
             assert False
+
+    def _get_pagination_info(self, first, last, total_messages):
+        return '{}-{} out of {}'.format(first, last, total_messages)
+
+    def _handle_pagination_clicked(self, live_page, pagination_func):
+        page_number, sensitivities, (first, last) = pagination_func()
+        messages_subset, _ = fetch_sample_messages(20, page_number)
+
+        info = self._get_pagination_info(first, last, self.pagination_state.total_items)
+        live_page.update_pagination(info, sensitivities)
+
+        views.update_inbox_model(self.inbox_messages_model, messages_subset)

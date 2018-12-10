@@ -86,8 +86,15 @@ def setup_shows_listbox(lb, shows):
     lb.bind_model(ls, lambda model, data: show.Show(model.title, model.subtitle, model.logo_path), None)
 
 
-def setup_inbox_listbox(lb, messages):
-    ls = Gio.ListStore()
+def setup_inbox_listbox(lb, ls, messages):
+    ls.remove_all()
     for m in messages:
         ls.append(MessageObject(html.unescape(m[5]), m[2], m[1]))
     lb.bind_model(ls, lambda model, data: Message(model.message, model.sender, model.timestamp), None)
+    return ls
+
+
+def update_inbox_model(ls, messages):
+    ls.remove_all()
+    for m in messages:
+        ls.append(MessageObject(html.unescape(m[5]), m[2], m[1]))
