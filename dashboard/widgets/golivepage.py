@@ -38,6 +38,8 @@ class GolivePage(Gtk.Box):
     def __init__(self):
         super().__init__()
         self._message = utils.get_descendant(self, 'message_textview', 0)
+        self._shows_stack = utils.get_descendant(self, 'shows_stack', 0)
+        self._existing_shows_view = utils.get_descendant(self, 'existing_shows_view', 0)
 
     @Gtk.Template.Callback()
     @log
@@ -51,3 +53,9 @@ class GolivePage(Gtk.Box):
 
     def set_buffer(self, text_buffer: Gtk.TextBuffer):
         self._message.set_buffer(text_buffer)
+
+    def get_shows_stack(self):
+        return self._shows_stack
+
+    def get_existing_shows_view(self):
+        return self._existing_shows_view

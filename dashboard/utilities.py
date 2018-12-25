@@ -14,7 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import math
-
+from threading import Lock
 
 class PaginationState:
     def __init__(self, total_items, items_per_page=20):
@@ -22,6 +22,7 @@ class PaginationState:
         self._current_page = 1
         self._total_items = total_items
         self._items_per_page = items_per_page
+        self._lock = Lock()
 
         self._n_pages = self._calculate_n_pages()
         self._assign_sensitivities()
@@ -77,10 +78,31 @@ class PaginationState:
 
         return self._current_page, self._sensitivities, self._get_shown_range()
 
+    def update_total_items(self, new_total_items):
+        """
+        Update the total items encoded by the paginator, e.g. when new messages are received. It's update and not
+        increment in case there is a possibility to decrement the total items in the future.
+
+        :param new_total_items: The new value for total_items
+        :return: The state of the paginator, as if goto_*_page was selected
+        """
+
+        # I don't know if it is the proper way for locking in this case...
+        self._lock.acquire()
+
+        # Update appropriate vars
+        self._total_items = new_total_items
+        self._n_pages = self._calculate_n_pages()
+        self._assign_sensitivities()
+
+        self._lock.release()
+
+        return self._current_page, self._sensitivities, self._get_shown_range()
+
     @property
     def total_items(self):
         return self._total_items
 
-    @total_items.setter
-    def total_items(self, value):
-        self._total_items = value
+    @property
+    def current_page(self):
+        return self._current_page

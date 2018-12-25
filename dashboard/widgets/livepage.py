@@ -77,6 +77,16 @@ class LivePage(Gtk.Notebook):
         self._message.set_buffer(text_buffer)
 
     def update_pagination(self, info, sensitivities):
+        """
+        Update the state/content of the pagination control/info. More specifically enable or disable sensitivity of
+        pagination controls according to state of the currently shown part of messages. E.g. if the first page is shown,
+        buttons which correpond to first, previous are disabled (sensitivity = false). Moreover updates the label above,
+        the control. Usually, this should contain the range of messages shown, or anything else as required.
+
+        :param info: The text for the info label
+        :param sensitivities: A tuple of four sensitivities corresponding to first, prev, next, last buttons
+        :return: None
+        """
         self._pagination_info.set_text(info)
 
         self._goto_first_button.set_sensitive(sensitivities[0])

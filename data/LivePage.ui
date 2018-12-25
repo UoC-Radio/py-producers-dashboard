@@ -5,7 +5,6 @@
   <template class="LivePage" parent="GtkNotebook">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
-    <property name="show_tabs">False</property>
     <signal name="map" handler="on_LivePage_map" swapped="no"/>
     <child>
       <object class="GtkBox">

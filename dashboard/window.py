@@ -76,6 +76,12 @@ class Window(Gtk.ApplicationWindow):
 
         self.pool = ThreadPool(processes=1)
 
+        self.message_fetcher = MockMessagesFetcher(20)
+        self.message_fetcher.connect('new-messages-received', self._on_new_messages_received)
+
+        # Need a reference to live page, as it is needed for message received handler
+        self.live_page = None
+
         # </State>
 
         self.prev_view = None
@@ -132,6 +138,7 @@ class Window(Gtk.ApplicationWindow):
                 'wait_page': WaitPage(),
                 'live_page': LivePage(),
             }
+
 
         # Initiate buffers
         self._pages['golive_page'].set_buffer(self.message_buffer)
@@ -201,19 +208,19 @@ class Window(Gtk.ApplicationWindow):
             self._views_stack.set_visible_child(self._pages['golive_page'])
 
     @log
-    def _on_golive_page_shown(self, widget):
+    def _on_golive_page_shown(self, golive_page):
         self.user_shows = self.store.get_user_shows(self.current_user)
-        lb = utils.get_descendant(widget, 'existing_shows_view', 0)
+        lb = golive_page.get_existing_shows_view()
         views.setup_shows_listbox(lb, self.user_shows)
 
     @log
-    def _on_golive_attempted(self, widget):
+    def _on_golive_attempted(self, golive_page):
+        # TODO add logic for checking user's selection
         golive_succeded = True
 
-        shows_stack = utils.get_descendant(widget, 'shows_stack', 0)
+        shows_stack = golive_page.get_shows_stack()
         self._setup_current_show(shows_stack)
 
-        #TODO add logic for checking user's selection
         if golive_succeded:
             self._views_stack.set_visible_child(self._pages['wait_page'])
 
@@ -233,50 +240,52 @@ class Window(Gtk.ApplicationWindow):
         result.self.timer_id = GLib.timeout_add(1000, result.self._timer_callback, result.widget)
 
     @log
-    def _on_instant_attempted(self, widget):
+    def _on_instant_attempted(self, wait_page):
         self._invalidate_timer()
         self.switch_to_live()
 
     @log
-    def _on_cancel_attempted(self, widget):
+    def _on_cancel_attempted(self, wait_page):
         self._invalidate_timer()
         self._views_stack.set_visible_child(self._pages['golive_page'])
 
     @log
-    def _on_live_page_shown(self, widget):
-        messages_subset, total_messages = fetch_sample_messages(20, 1)
+    def _on_live_page_shown(self, live_page):
+        messages_subset, total_messages = self.message_fetcher.fetch_first_time_messages()
         self.pagination_state = PaginationState(total_messages)
 
         _, sensitivities, (first, last) = self.pagination_state.goto_first_page()
-        info = self._get_pagination_info(first, last, total_messages)
-        widget.update_pagination(info, sensitivities)
+        info = Window._get_pagination_info(first, last, total_messages)
+        live_page.update_pagination(info, sensitivities)
 
-        lb = utils.get_descendant(widget, 'inbox_messages_view', 0)
+        lb = utils.get_descendant(live_page, 'inbox_messages_view', 0)
         views.setup_inbox_listbox(lb, self.inbox_messages_model, messages_subset)
 
-    @log
-    def _on_goto_first_clicked(self, widget):
-        self._handle_pagination_clicked(widget, self.pagination_state.goto_first_page)
+        self.live_page = live_page
 
     @log
-    def _on_goto_previous_clicked(self, widget):
-        self._handle_pagination_clicked(widget, self.pagination_state.goto_previous_page)
+    def _on_goto_first_clicked(self, live_page):
+        self._handle_pagination_clicked(live_page, self.pagination_state.goto_first_page)
 
     @log
-    def _on_goto_next_clicked(self, widget):
-        self._handle_pagination_clicked(widget, self.pagination_state.goto_next_page)
+    def _on_goto_previous_clicked(self, live_page):
+        self._handle_pagination_clicked(live_page, self.pagination_state.goto_previous_page)
+
+    @log
+    def _on_goto_next_clicked(self, live_page):
+        self._handle_pagination_clicked(live_page, self.pagination_state.goto_next_page)
 
 
     @log
-    def _on_goto_last_clicked(self, widget):
-        self._handle_pagination_clicked(widget, self.pagination_state.goto_last_page)
+    def _on_goto_last_clicked(self, live_page):
+        self._handle_pagination_clicked(live_page, self.pagination_state.goto_last_page)
 
     # Helper functions
 
     def switch_to_live(self):
         self._views_stack.set_visible_child(self._pages['live_page'])
 
-    def _timer_callback(self, widget):
+    def _timer_callback(self, wait_page):
         self.time_for_live -= 1
 
         if self.time_for_live == 0:
@@ -284,7 +293,7 @@ class Window(Gtk.ApplicationWindow):
             self.switch_to_live()
             return False
         else:
-            widget.set_remaining(str(self.time_for_live))
+            wait_page.set_remaining(str(self.time_for_live))
             return True
 
     def _invalidate_timer(self):
@@ -306,14 +315,28 @@ class Window(Gtk.ApplicationWindow):
         else:
             assert False
 
-    def _get_pagination_info(self, first, last, total_messages):
+    @staticmethod
+    def _get_pagination_info(first, last, total_messages):
         return '{}-{} out of {}'.format(first, last, total_messages)
 
     def _handle_pagination_clicked(self, live_page, pagination_func):
         page_number, sensitivities, (first, last) = pagination_func()
-        messages_subset, _ = fetch_sample_messages(20, page_number)
+        messages_subset, _ = self.message_fetcher.get_page_messages(page_number)
 
-        info = self._get_pagination_info(first, last, self.pagination_state.total_items)
+        info = Window._get_pagination_info(first, last, self.pagination_state.total_items)
         live_page.update_pagination(info, sensitivities)
+
+        views.update_inbox_model(self.inbox_messages_model, messages_subset)
+
+    def _on_new_messages_received(self, obj, l):
+        print('New messages received')
+
+        page_number, sensitivities, (first, last) = \
+            self.pagination_state.update_total_items(self.pagination_state.total_items + l)
+
+        messages_subset, _ = self.message_fetcher.get_page_messages(self.pagination_state.current_page)
+
+        info = Window._get_pagination_info(first, last, self.pagination_state.total_items)
+        self.live_page.update_pagination(info, sensitivities)
 
         views.update_inbox_model(self.inbox_messages_model, messages_subset)
