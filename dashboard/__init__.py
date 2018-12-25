@@ -1,3 +1,21 @@
+# Copyright (c) 2013 Vadim Rutkovsky <vrutkovs@redhat.com>
+# Copyright (c) 2013 Guillaume Quintard <guillaume.quintard@gmail.com>
+# Copyright (c) 2013 Eslam Mostafa <cseslam@gmail.com>
+# Copyright (c) 2013 Manish Sinha <manishsinha@ubuntu.com>
+#
+# This software is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 from itertools import chain
 from time import time
 import logging

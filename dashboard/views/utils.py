@@ -1,10 +1,24 @@
+# Copyright © 2018 George Galanakis <ggalan87@gmail.com>
+#
+# This software is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 
-
-# from: https://stackoverflow.com/questions/9722992/pygtk-get-widget-by-name-from-parent-node
+# Obtained from: https://stackoverflow.com/a/41663148
 def get_descendant(widget, child_name, level, doPrint=False):
     if widget is not None:
         if doPrint: print("-" * level + ": " + (Gtk.Buildable.get_name(widget) or "(None)") + " :: " + (

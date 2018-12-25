@@ -1,3 +1,27 @@
+# Copyright (c) 2013 Arnel A. Borja <kyoushuu@yahoo.com>
+# Copyright (c) 2013 Vadim Rutkovsky <vrutkovs@redhat.com>
+# Copyright (c) 2013 Lubosz Sarnecki <lubosz@gmail.com>
+# Copyright (c) 2013 Guillaume Quintard <guillaume.quintard@gmail.com>
+# Copyright (c) 2013 Felipe Borges <felipe10borges@gmail.com>
+# Copyright (c) 2013 Eslam Mostafa <cseslam@gmail.com>
+# Copyright (c) 2013 Shivani Poddar <shivani.poddar92@gmail.com>
+# Copyright (c) 2013 Sai Suman Prayaga <suman.sai14@gmail.com>
+# Copyright (c) 2013 Seif Lotfy <seif@lotfy.com>
+# Copyright © 2018 George Galanakis <ggalan87@gmail.com>
+#
+# This software is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 from gettext import gettext as _
 
 from gi.repository import Gtk, Gio, GLib, Gdk
