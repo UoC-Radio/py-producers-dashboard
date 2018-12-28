@@ -31,6 +31,14 @@ frame
 	padding-bottom: 0.8em;
 }
 
+.title_h2
+{
+	font-size:1.0em;
+	font-weight:bold;
+	padding-top: 0.8em;
+	padding-bottom: 0.8em;
+}
+
 .form_label
 {
     margin-bottom: 0.2em;
@@ -40,6 +48,11 @@ frame
 .form_entry
 {
 	margin-bottom: 0.8em;
+}
+
+.form_grid
+{
+        margin: 0.5em;
 }
 
 .non_editable_entry, .non_editable_entry text
@@ -114,4 +127,8 @@ frame
     margin-bottom: 1em;
 }
 
+#metadata_vbox
+{
+        margin: 0.5em;
+}
 

@@ -14,7 +14,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import math
+from enum import Enum
 from threading import Lock
+from gi.repository import GObject, GLib
+import dbus
+from dbus.mainloop.glib import DBusGMainLoop
+import pympris
 
 class PaginationState:
     def __init__(self, total_items, items_per_page=20):
@@ -106,3 +111,66 @@ class PaginationState:
     @property
     def current_page(self):
         return self._current_page
+
+
+class MetadataSource(Enum):
+    EMPTY = 1
+    PLAYER = 2
+    MANUAL = 3
+
+
+class MediaPlayersStore:
+    def __init__(self):
+        self._supported_players = ['org.mpris.MediaPlayer2.{}'.format(id) for id in ['audacious', 'vlc', 'quodlibet']]
+        dbus_loop = DBusGMainLoop()
+        self._bus = dbus.SessionBus(mainloop=dbus_loop)
+        self._media_players = dict()
+        self._signal_match = None
+
+        for name in filter(lambda item: item in self._supported_players, self._bus.list_names()):
+            mp = pympris.MediaPlayer(str(self._bus.get_name_owner(name)), self._bus)
+            print(mp.root.Identity)
+            self._media_players[mp.root.Identity] = mp
+
+    def __del__(self):
+        # Maybe it is already automatically handled, but I implicitly remove the signal handler to dbus
+        if self._signal_match:
+            self._signal_match.remove()
+
+    @staticmethod
+    def handle_properties_changes(changed_props, invalidated_props):
+        for name, value in changed_props.items():
+            if name == 'Metadata':
+                print('Property %s was change value to %s.' % (name, value))
+                title = value['xesam:title'] if 'xesam:title' in value else ''
+                artist = value['xesam:artist'] if 'xesam:artist' in value else ''
+                album = value['xesam:album'] if 'xesam:album' in value else ''
+                cover_url = value['mpris:artUrl'] if 'mpris:artUrl' in value else ''
+
+                # TODO: Create and call a callback to metadata propagator
+                print(title, artist, album)
+
+    def switch_to_player(self, player_name):
+        return self._media_players[player_name].player.register_properties_handler(MediaPlayersStore.handle_properties_changes)
+
+    def get_players_names(self):
+        return list(self._media_players.keys())
+
+
+class MetadataPropagationState:
+    def __init__(self):
+        self._source = MetadataSource.EMPTY
+        self._current_player = None
+        self._players_store = None
+
+    def _find_avalable_players(self):
+        self._players_store = MediaPlayersStore()
+
+    def get_players_names(self, rediscover=False):
+        if self._players_store is None or rediscover:
+            self._find_avalable_players()
+        return self._players_store.get_players_names()
+
+    def switch_to_player(self, player_name):
+        self._source = MetadataSource.PLAYER
+        self._players_store.switch_to_player(player_name)

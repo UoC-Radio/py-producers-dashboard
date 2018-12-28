@@ -113,3 +113,20 @@ def update_inbox_model(ls, messages):
     ls.remove_all()
     for m in messages:
         ls.append(MessageObject(html.unescape(m[5]), m[2], m[1]))
+
+
+def setup_players_combobox(cb, ls, players):
+    ls.clear()
+    for p in players:
+        ls.append([p])
+    cb.set_model(ls)
+
+    renderer_text = Gtk.CellRendererText()
+    cb.pack_start(renderer_text, True)
+    cb.add_attribute(renderer_text, "text", 0)
+
+
+def update_players_model(ls, players):
+    ls.clear()
+    for p in players:
+        ls.append([p])

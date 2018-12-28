@@ -33,7 +33,7 @@ from dashboard.models import AsyncResult
 
 from dashboard.remote import *
 from dashboard.views import views, utils
-from dashboard.utilities import PaginationState
+from dashboard.utilities import PaginationState, MetadataPropagationState
 
 from enum import IntEnum
 
@@ -68,11 +68,13 @@ class Window(Gtk.ApplicationWindow):
         self.time_for_live = None
 
         self.pagination_state = None
+        self.metadata_propagation_state = None
 
         # Keep a single TextBuffer for all pages
         self.message_buffer = Gtk.TextBuffer()
 
         self.inbox_messages_model = Gio.ListStore()
+        self.players_model = Gtk.ListStore(str)
 
         self.pool = ThreadPool(processes=1)
 
@@ -160,6 +162,9 @@ class Window(Gtk.ApplicationWindow):
         self._pages['live_page'].connect('goto-previous-clicked', self._on_goto_previous_clicked)
         self._pages['live_page'].connect('goto-next-clicked', self._on_goto_next_clicked)
         self._pages['live_page'].connect('goto-last-clicked', self._on_goto_last_clicked)
+        self._pages['live_page'].connect('propagate-metadata-state-changed', self._on_propagate_metadata_state_changed)
+        self._pages['live_page'].connect('active-player-changed', self._on_active_player_changed)
+
 
         # Setup title bar
         self._headerbar = HeaderBar()
@@ -258,10 +263,13 @@ class Window(Gtk.ApplicationWindow):
         info = Window._get_pagination_info(first, last, total_messages)
         live_page.update_pagination(info, sensitivities)
 
-        lb = utils.get_descendant(live_page, 'inbox_messages_view', 0)
-        views.setup_inbox_listbox(lb, self.inbox_messages_model, messages_subset)
+        inbox_view = live_page.get_inbox_messages_view()
+        views.setup_inbox_listbox(inbox_view, self.inbox_messages_model, messages_subset)
 
         self.live_page = live_page
+
+        self.metadata_propagation_state = MetadataPropagationState()
+
 
     @log
     def _on_goto_first_clicked(self, live_page):
@@ -275,10 +283,21 @@ class Window(Gtk.ApplicationWindow):
     def _on_goto_next_clicked(self, live_page):
         self._handle_pagination_clicked(live_page, self.pagination_state.goto_next_page)
 
-
     @log
     def _on_goto_last_clicked(self, live_page):
         self._handle_pagination_clicked(live_page, self.pagination_state.goto_last_page)
+
+    @log
+    def _on_propagate_metadata_state_changed(self, live_page, is_active):
+        print('Metadata propagation is:', is_active)
+
+        cb = live_page.get_players_combo_box()
+        players = self.metadata_propagation_state.get_players_names()
+        views.setup_players_combobox(cb, self.players_model, players)
+
+    @log
+    def _on_active_player_changed(self, live_page, player_name):
+        self.metadata_propagation_state.switch_to_player(player_name)
 
     # Helper functions
 

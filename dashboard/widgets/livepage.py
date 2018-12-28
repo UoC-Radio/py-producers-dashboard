@@ -32,6 +32,8 @@ class LivePage(Gtk.Notebook):
             'goto-previous-clicked': (GObject.SignalFlags.RUN_FIRST, None, ()),
             'goto-first-clicked': (GObject.SignalFlags.RUN_FIRST, None, ()),
             'goto-last-clicked': (GObject.SignalFlags.RUN_FIRST, None, ()),
+            'propagate-metadata-state-changed': (GObject.SignalFlags.RUN_FIRST, None, (bool,)),
+            'active-player-changed': (GObject.SignalFlags.RUN_FIRST, None, (str,)),
         }
 
     def __repr__(self):
@@ -47,6 +49,12 @@ class LivePage(Gtk.Notebook):
         self._goto_previous_button = utils.get_descendant(self, 'goto_previous_button', 0)
         self._goto_next_button = utils.get_descendant(self, 'goto_next_button', 0)
         self._goto_last_button = utils.get_descendant(self, 'goto_last_button', 0)
+
+        self._inbox_messages_view = utils.get_descendant(self, 'inbox_messages_view', 0)
+        self._source_selection_vbox = utils.get_descendant(self, 'source_selection_vbox', 0)
+        #self._players_metadata_view = utils.get_descendant(self, 'players_metadata_view', 0)
+        #self._manual_metadata_view = utils.get_descendant(self, 'manual_metadata_view', 0)
+        self._players_combo_box = utils.get_descendant(self, 'players_combo_box', 0)
 
     @Gtk.Template.Callback()
     @log
@@ -73,6 +81,21 @@ class LivePage(Gtk.Notebook):
     def on_goto_last_button_clicked(self, widget):
         self.emit('goto-last-clicked')
 
+    @Gtk.Template.Callback()
+    @log
+    def on_propagate_metadata_switch_state_set(self, widget, is_active):
+        self._source_selection_vbox.set_sensitive(is_active)
+        self.emit('propagate-metadata-state-changed', is_active)
+
+    @Gtk.Template.Callback()
+    @log
+    def on_players_combo_box_changed(self, widget):
+        tree_iter = widget.get_active_iter()
+        if tree_iter is not None:
+            model = widget.get_model()
+            selection = model[tree_iter][0]
+            self.emit('active-player-changed', selection)
+
     def set_buffer(self, text_buffer: Gtk.TextBuffer):
         self._message.set_buffer(text_buffer)
 
@@ -93,3 +116,9 @@ class LivePage(Gtk.Notebook):
         self._goto_previous_button.set_sensitive(sensitivities[1])
         self._goto_next_button.set_sensitive(sensitivities[2])
         self._goto_last_button.set_sensitive(sensitivities[3])
+
+    def get_inbox_messages_view(self):
+        return self._inbox_messages_view
+
+    def get_players_combo_box(self):
+        return self._players_combo_box
