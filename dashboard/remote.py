@@ -23,7 +23,7 @@ import json
 from abc import ABC, abstractmethod
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
-
+from dashboard.authentication import authenticate
 
 class Store:
 
@@ -45,8 +45,8 @@ class Store:
 
 
 def validate_login(username, password):
-    return username == 'arouraios' and password == 'papakia'
-    #return not (username + password)
+    #return username == 'arouraios' and password == 'papakia'
+    return authenticate(username, password)
 
 
 def get_metadata():
